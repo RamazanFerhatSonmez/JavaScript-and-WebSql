@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<title></title>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.5/css/bootstrap.min.css">
+	<style type="text/css">
+	table {
+		font-family: arial, sans-serif;
+		border-collapse: collapse;
+		width: 100%;
+	}
+
+	td, th {
+		border: 1px solid #dddddd;
+		text-align: left;
+		padding: 8px;
+	}
+
+	tr:nth-child(even) {
+		background-color: #dddddd;
+	}
+</style>
+
+</head>
+<body>
+
+	<table class="table table-hover">
+		<div >
+			<input type="text" class="bg-warning" id="name" placeholder="Enter your name">
+			<input type="text" class="bg-warning" id="surName" placeholder="Enter your surname">
+			<input id="rowAdd" class="btn btn-primary" type="button" value="Ekle">
+
+			<input id="islem" class="btn btn-link " type="button" value="Kaydet">
+			<br><br>
+			<input class="bg-warning" type="text" id="name_1">
+			<input type="text" class="bg-warning" id="surName_1">
+		</div>
+	</table>
+
+	<div class="tbl_user_data"></div>
+
+</body>
+
+<script>
+	$(document).ready(function($)
+	{
+/*****************
+ISIM KAYDETME KISMI
+***************
+*/
+
+var kontrol=true;
+var controlDüzenle=true;
+var counter=0;
+var kontrol=true;
+var x=0;
+//***********************************************************
+function dataSave(){
+
+	if(kontrol==false){
+
+		
+		var ad=$("#name").val();
+		var soyad=$("#surName").val();
+		$("#name_1").val(ad);
+		$("#surName_1").val(soyad);
+
+		$("#islem").val("Kaydet");
+		kontrol=true;           
+		
+
+	}else{
+
+		
+
+		if(x>0){
+			var ad=$("#name_1").val();
+			var soyad=$("#surName_1").val();
+			$("#name").val(ad);
+			$("#surName").val(soyad);
+			$("#name_1").val("");
+			$("#surName_1").val("");
+
+		}
+		x++;
+
+		$("#islem").val("Düzenle");
+		kontrol=false;
+
+		
+
+	}
+}
+//*******************************************
+$("#islem").click(function(){
+
+	dataSave();
+
+});
+
+
+
+
+
+
+var random_id = function  () 
+{
+	var id_num = Math.random().toString(9).substr(2,3);
+	var id_str = Math.random().toString(36).substr(2);
+
+	return id_num + id_str;
+}
+
+var tbl = '';
+tbl +='<table>';
+tbl +='<thead  >';
+tbl +='<tr>';
+tbl +='<th> Name</th>';
+tbl +='<th> Sur_Name</th>';
+tbl +='<th>Options</th>';
+tbl +='</tr>';
+tbl +='</thead>';	
+
+tbl +='<tbody>';
+tbl +='</table>';	
+$(document).on('click', '#rowAdd',function(event){
+
+
+	tbl = tbl.replace("</table>","");
+	var row_id = random_id();
+	var name=$("#name").val();
+	var surName=$("#surName").val();
+	$("#name").val("");
+	$("#surName").val("");
+
+				//loop through ajax row data
+				tbl +='<tr row_id="'+row_id+'">';
+				tbl +='<td ><div class="row_data" edit_type="click" >'+name+'</div></td>';
+				tbl +='<td ><div class="row_data" edit_type="click" >'+surName+'</div></td>';
+
+				
+				tbl +='<td>';
+
+				tbl +='<span class="btn_edit" > <a href="#" class="btn btn-link " row_id="'+row_id+'" > Edit</a> </span>';
+
+				tbl +='<span class="btn_save"> <a href="#" class="btn btn-link"  row_id="'+row_id+'"> Save</a>| </span>';						
+				tbl +='<span class="btn_delete"> <a href="#" class="btn btn-link"  row_id="'+row_id+'"> Delete</a> </span>';
+				tbl +='</td>';
+				
+				tbl +='</tr>';
+
+
+				tbl +='</tbody>';
+				tbl +='</table>';	
+
+				$(document).find('.tbl_user_data').html(tbl);
+				
+
+				$(document).find('.btn_save').hide();
+				$(document).find('.btn_delete').hide();
+
+
+
+				
+			});
+
+
+
+
+
+$(document).on('click', '.row_data', function(event) 
+{
+	event.preventDefault(); 
+
+	if($(this).attr('edit_type') == 'button')
+	{
+		return false; 
+	}
+
+
+	$(this).closest('div').attr('contenteditable', 'false');
+
+	$(this).addClass('bg-warning').css('padding','');
+
+	$(this).focus();
+})	;
+
+
+
+$(document).on('focusout', '.row_data', function(event) 
+{
+	event.preventDefault();
+
+	if($(this).attr('edit_type') == 'button')
+	{
+		return false; 
+	}
+
+	var row_id = $(this).closest('tr').attr('row_id'); 
+
+	var row_div = $(this)				
+	.removeClass('bg-warning') 
+	.css('padding','');
+
+
+})	;
+
+
+
+$(document).on('click', '.btn_edit', function(event) 
+{
+	event.preventDefault();
+	var tbl_row = $(this).closest('tr');
+
+	var row_id = tbl_row.attr('row_id');
+
+	tbl_row.find('.btn_save').show();
+	tbl_row.find('.btn_delete').show();
+
+	tbl_row.find('.btn_edit').hide(); 
+
+
+	tbl_row.find('.row_data')
+	.attr('contenteditable', 'true')
+	.attr('edit_type', 'button');
+
+
+
+});
+
+
+
+$(document).on('click', '.btn_save', function(event) 
+{
+	event.preventDefault();
+	var tbl_row = $(this).closest('tr');
+
+	var row_id = tbl_row.attr('row_id');
+
+
+
+	tbl_row.find('.btn_save').hide();
+	
+$(document).find('.btn_delete').hide();
+
+	tbl_row.find('.btn_edit').show();
+
+
+
+	tbl_row.find('.row_data')
+	.attr('edit_type', 'click')
+	.removeClass('bg-warning');
+
+});
+
+
+}); 
+</script>
+</html>
